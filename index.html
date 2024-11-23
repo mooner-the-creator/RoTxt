@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTX Asset Generator</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            background-color: #f5f5f5;
+        }
+
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .required {
+            color: #dc2626;
+            margin-left: 0.25rem;
+        }
+
+        .tooltip {
+            display: inline-block;
+            margin-left: 0.5rem;
+            color: #6b7280;
+            cursor: help;
+            position: relative;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #374151;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        input[type="text"]:focus,
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <form id="rtxForm">
+            <div class="form-group">
+                <label for="meta-name">Name <span class="required">*</span></label>
+                <input type="text" id="meta-name" placeholder="Cat Image" required>
+            </div>
+
+            <div class="form-group">
+                <label for="meta-description">Description <span class="required">*</span></label>
+                <input type="text" id="meta-description" placeholder="Highest quality cat image on Roblox." required>
+            </div>
+
+            <div class="form-group">
+                <label for="copyright">
+                    Copyright <span class="required">*</span>
+                    <span class="tooltip" data-tip="This can be detailed, or just the creator's name">?</span>
+                </label>
+                <input type="text" id="copyright" placeholder="RoTxt ©️ Moon 2024." required>
+            </div>
+
+            <div class="form-group">
+                <label for="file">File <span class="required">*</span></label>
+                <input type="file" id="file" required>
+            </div>
+
+            <div class="form-group">
+                <label for="file-name">File Name <span class="required">*</span></label>
+                <input type="text" id="file-name" placeholder="cat.png" required>
+            </div>
+
+            <div class="form-group">
+                <label for="subdirectory">
+                    Subdirectory
+                    <span class="tooltip" data-tip="This can be empty">?</span>
+                </label>
+                <input type="text" id="subdirectory" placeholder="/images/cats">
+            </div>
+
+            <div class="form-group">
+                <label for="output-name">Output File <span class="required">*</span></label>
+                <input type="text" id="output-name" placeholder="cats.rtx" required>
+            </div>
+
+            <button type="submit">Generate</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('rtxForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const file = document.getElementById('file').files[0];
+            const base64 = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                reader.readAsDataURL(file);
+            });
+
+            const rtxData = {
+                AssetFileName: document.getElementById('file-name').value,
+                AssetDirectory: document.getElementById('subdirectory').value || "",
+                Meta: {
+                    Name: document.getElementById('meta-name').value,
+                    Description: document.getElementById('meta-description').value,
+                    Copyright: document.getElementById('copyright').value
+                },
+                Asset: base64
+            };
+
+            const blob = new Blob([JSON.stringify(rtxData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = document.getElementById('output-name').value;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('file').addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                document.getElementById('file-name').value = e.target.files[0].name;
+            }
+        });
+    </script>
+</body>
+</html>
