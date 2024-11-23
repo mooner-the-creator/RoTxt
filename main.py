@@ -26,3 +26,5 @@ for f in robloxDirs:
     txtFile = open(pathtofi, "wb")
     txtFile.write(b64.b64decode(roTxt["Asset"]))
     txtFile.close()
+
+print(f'Use "rbxasset://roTxt{roTxt["AssetDirectory"]}/{roTxt["AssetFileName"]}" in Roblox to access this asset.')
