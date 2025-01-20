@@ -1,6 +1,6 @@
 import json, base64 as b64, os
 
-roTxtFile = open(input("What is the name of the RoTxt file(.rtx) you want to import? ") + ".rtx", "r")
+roTxtFile = open(input("What is the name of the RoTxt file(.rtx(p)) you want to import? "), "r")
 robloxAuto = input("Would you like to automatically search for Roblox? (N)o ")
 def getDir():
     ftlt = []
@@ -16,15 +16,23 @@ def getDir():
 robloxDirs = getDir() if not robloxAuto.lower() == "n" else [input("What is your Roblox directory? ")]
 roTxtDir = "\\content\\roTxt"
 
-roTxt = json.load(roTxtFile)
-roTxtFile.close()
-for f in robloxDirs:
-    pathtofo = f + roTxtDir + roTxt["AssetDirectory"].replace("/", "\\")
-    pathtofi = pathtofo + "\\" + roTxt["AssetFileName"]
-    print(f'Writing to "{pathtofi}"')
-    if not os.path.exists(pathtofo): os.makedirs(pathtofo)
-    txtFile = open(pathtofi, "wb")
-    txtFile.write(b64.b64decode(roTxt["Asset"]))
-    txtFile.close()
+def parse(f):
+    roTxt = json.load(parse)
+    roTxtFile.close()
+    for f in robloxDirs:
+        pathtofo = f + roTxtDir + roTxt["AssetDirectory"].replace("/", "\\")
+        pathtofi = pathtofo + "\\" + roTxt["AssetFileName"]
+        print(f'Writing to "{pathtofi}"')
+        if not os.path.exists(pathtofo): os.makedirs(pathtofo)
+        txtFile = open(pathtofi, "wb")
+        txtFile.write(b64.b64decode(roTxt["Asset"]))
+        txtFile.close()
 
-print(f'Use "rbxasset://roTxt{roTxt["AssetDirectory"]}/{roTxt["AssetFileName"]}" in Roblox to access this asset.')
+    print(f'Use "rbxasset://roTxt{roTxt["AssetDirectory"]}/{roTxt["AssetFileName"]}" in Roblox to access this asset.')
+
+
+if roTxtFile.endswith(".rtxp"):
+    for x in roTxtFile.split("ﬁ"):
+        parse(x)
+elif roTxt.endswith(".rtx"):
+    parse(roTxtFile)
